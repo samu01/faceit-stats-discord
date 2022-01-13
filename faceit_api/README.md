@@ -1,4 +1,4 @@
-# Faceit_API.py
+# [Faceit_API.py](https://github.com/LaughingLove/faceit_api.py)
 ### A Faceit API wrapper for Python
 Currently I only made a wrapper for the Faceit Data API, however I will continue to add more Faceit APIs
 
