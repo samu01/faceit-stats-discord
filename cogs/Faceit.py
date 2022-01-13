@@ -208,14 +208,6 @@ class Faceit(commands.Cog):
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
         await ctx.send('> something went wrong')
 
-    @commands.command(hidden=True)
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def ping(self, ctx: commands.Context):
-        puts(f"[Info] {ctx.author} asked for ping ({round(self.bot.latency * 1000)}ms)")
-        emb = discord.Embed(color=self.color)
-        emb.add_field(name="Ping", value=f"{round(self.bot.latency * 1000)}ms")
-        await ctx.send(embed=emb)
-
     @commands.command()
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def average(self, ctx: commands.Context, nickname: str, amount_of_games: int = 20, ignore_1v1s: bool = True):
