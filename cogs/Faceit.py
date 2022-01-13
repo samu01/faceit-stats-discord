@@ -54,12 +54,12 @@ class Faceit(commands.Cog):
             return await message.edit(content=f"{message.content}\n> {nickname} has not played csgo")
 
         player_csgo_stats = faceit_data.player_stats(player_id, "csgo")
-
+        
         player_name = player["nickname"]
         player_faceit_url = player["faceit_url"].replace("{lang}", "en")
         player_avatar = player["avatar"]
-        player_afk_infractions = player["infractions"]["afk"]
-        player_leaver_infractions = player["infractions"]["leaver"]
+        #player_afk_infractions = player["infractions"]["afk"]
+        #player_leaver_infractions = player["infractions"]["leaver"]
         player_csgo_elo = player["games"]["csgo"]["faceit_elo"]
         player_csgo_level = player["games"]["csgo"]["skill_level"]
         player_lifetime_averagekd = player_csgo_stats["lifetime"]["Average K/D Ratio"]
@@ -74,12 +74,12 @@ class Faceit(commands.Cog):
         if player_elo_to_next_level == -1:
             player_elo_to_next_level_msg = ""
         
-        player_reg_status = "unknown"
-        player_details_v1 = faceit_data.player_details_v1_api(player_name)
-        if player_details_v1 is not None:
-            if "result" in player_details_v1:
-                if "ok" in player_details_v1["result"]:
-                    player_reg_status = player_details_v1["payload"]["registration_status"]
+        #player_reg_status = "unknown"
+        #player_details_v1 = faceit_data.player_details_v1_api(player_name)
+        #if player_details_v1 is not None:
+        #    if "result" in player_details_v1:
+        #        if "ok" in player_details_v1["result"]:
+        #            player_reg_status = player_details_v1["payload"]["registration_status"]
 
         level_emoji = get_emoji_level(player_csgo_level)
 
@@ -94,9 +94,9 @@ class Faceit(commands.Cog):
         emb.add_field(name="Win rate", value=f"{player_lifetime_winrate}%", inline=False)
         emb.add_field(name="Average K/D", value=f"{player_lifetime_averagekd}", inline=False)
         emb.add_field(name="Average HS", value=f"{player_lifetime_averagehs}%", inline=False)
-        emb.add_field(name="Leaver Infractions", value=f"{player_leaver_infractions}", inline=False)
-        emb.add_field(name="AFK Infractions", value=f"{player_afk_infractions}", inline=False)
-        emb.add_field(name="Account Status", value=f"{player_reg_status}", inline=False)
+        #emb.add_field(name="Leaver Infractions", value=f"{player_leaver_infractions}", inline=False)
+        #emb.add_field(name="AFK Infractions", value=f"{player_afk_infractions}", inline=False)
+        #emb.add_field(name="Account Status", value=f"{player_reg_status}", inline=False)
         await message.edit(content="", embed=emb)
         
     @commands.command()

@@ -10,6 +10,7 @@ last_cmd_times = {}
 
 bot = Bot(command_prefix='-',
           command_attrs=dict(hidden=True))
+bot.remove_command("help")
 
 puts(f"[Info] discord.py v{discord.__version__}")
 
