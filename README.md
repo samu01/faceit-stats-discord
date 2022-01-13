@@ -5,3 +5,5 @@
 1. Install requirements with `pip install -r requirements.txt`
 2. Set `DISCORD_TOKEN` and `FACEIT_TOKEN` environment variables
 3. Run `python main.py`
+
+[Dockerhub](https://hub.docker.com/r/samut3/faceit-stats-discord)
