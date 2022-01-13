@@ -28,8 +28,6 @@ async def on_ready():
     for x in range(len(bot.guilds)):
         puts(f'[Info] {x+1}. {bot.guilds[x].name}')
 
-    await bot.change_presence(activity=discord.Game(name='-help'))
-
 @bot.event
 async def on_guild_join(guild):
     puts(f'[Info] Joined a server: {guild}')
