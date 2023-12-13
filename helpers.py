@@ -89,8 +89,13 @@ def elo_to_next_level(current_elo: int, current_level: int):
 
 
 def get_average_stats_of_last_x_matches(faceit_data: FaceitData, player_id: str, amount: int, ignore_1v1s: bool) -> AverageStats:
-    player_matches = faceit_data.player_matches_v1_api(player_id, "csgo", amount)
-    passed = 0
+    #player_matches = faceit_data.player_matches_v1_api(player_id, "cs2", amount)
+    player_matches = faceit_data.player_matches(player_id, "cs2", None, None, 0, amount)
+    if len(player_matches["items"]) == 0:
+        return AverageStats(-1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1)
+        
+    matches = 0
+    #passed = 0
 
     total_kills = 0
     total_deaths = 0
@@ -100,27 +105,52 @@ def get_average_stats_of_last_x_matches(faceit_data: FaceitData, player_id: str,
     total_wins = 0
     lowest_elo = 9999
     highest_elo = 0
-    for player_match in player_matches:
-        if ignore_1v1s and "5v5" not in player_match["gameMode"]:
-            passed += 1
-            continue
+    
+    for player_match in player_matches["items"]:
+        player_match_stats = faceit_data.match_stats(player_match["match_id"])
+        for match_round in player_match_stats["rounds"]:
+            if ignore_1v1s and "5v5" not in match_round["game_mode"]:
+                #passed += 1
+                continue
+        
+            player_stats = None
+            for team in match_round["teams"]:
+                for player in team["players"]:
+                    if player["player_id"] == player_id:
+                        player_stats = player["player_stats"]
+                        break
+                        
+            if player_stats is not None:
+                matches += 1
+                total_kills += int(player_stats["Kills"])
+                total_deaths += int(player_stats["Deaths"])
+                total_kd += float(player_stats["K/D Ratio"])
+                total_kr += float(player_stats["K/R Ratio"])
+                total_hs += int(player_stats["Headshots %"])
+                if int(player_stats["Result"]) == 1:
+                    total_wins += 1
+    
+    #for player_match in player_matches:
+    #    if ignore_1v1s and "5v5" not in player_match["gameMode"]:
+    #        passed += 1
+    #        continue
 
-        total_kills += int(player_match["i6"])
-        total_deaths += int(player_match["i8"])
-        total_kd += float(player_match["c2"])
-        total_kr += float(player_match["c3"])
-        total_hs += int(player_match["c4"])
-        if "elo" in player_match:
-            elo = int(player_match["elo"])
-            if elo > highest_elo:
-                highest_elo = elo
-            if elo < lowest_elo:
-                lowest_elo = elo
+    #    total_kills += int(player_match["i6"])
+    #    total_deaths += int(player_match["i8"])
+    #    total_kd += float(player_match["c2"])
+    #    total_kr += float(player_match["c3"])
+    #    total_hs += int(player_match["c4"])
+    #    if "elo" in player_match:
+    #        elo = int(player_match["elo"])
+    #        if elo > highest_elo:
+    #            highest_elo = elo
+    #        if elo < lowest_elo:
+    #            lowest_elo = elo
 
-        if player_match["i2"] == player_match["teamId"]:
-            total_wins += 1
+    #    if player_match["i2"] == player_match["teamId"]:
+    #        total_wins += 1
 
-    matches = len(player_matches) - passed
+    #matches = len(player_matches["items"]) - passed
     average_kills = round(total_kills / matches, 1)
     average_deaths = round(total_deaths / matches, 1)
     average_kd = round(total_kd / matches, 2)

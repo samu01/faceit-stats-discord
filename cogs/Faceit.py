@@ -30,12 +30,12 @@ class Faceit(commands.Cog):
         puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up stats for {faceit_name}")
         message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
 
-        player = faceit_data.player_details(faceit_name, "csgo")
+        player = faceit_data.player_details(faceit_name, "cs2")
         if player is None or "nickname" not in player:
             puts(f"[Info] {ctx.author}: Name ({faceit_name} not exact, searching...")
             await message.edit(content=f"{message.content}\n> Name not exact, searching...")
 
-            player_search = faceit_data.search_players(faceit_name, "csgo", None, 0, 1)
+            player_search = faceit_data.search_players(faceit_name, "cs2", None, 0, 1)
             items = player_search['items']
             if len(items) == 0:
                 return await message.edit(content=f"{message.content}\n> Couldn't find a player with the name \"{nickname}\"")
@@ -50,18 +50,18 @@ class Faceit(commands.Cog):
         if player is None:
             return await message.edit(content=f"{message.content}\n> Couldn't find a player with the name \"{nickname}\"")
 
-        if "csgo" not in player["games"]:
-            return await message.edit(content=f"{message.content}\n> {nickname} has not played csgo")
+        if "cs2" not in player["games"]:
+            return await message.edit(content=f"{message.content}\n> {nickname} has not played cs2")
 
-        player_csgo_stats = faceit_data.player_stats(player_id, "csgo")
+        player_csgo_stats = faceit_data.player_stats(player_id, "cs2")
         
         player_name = player["nickname"]
         player_faceit_url = player["faceit_url"].replace("{lang}", "en")
         player_avatar = player["avatar"]
         #player_afk_infractions = player["infractions"]["afk"]
         #player_leaver_infractions = player["infractions"]["leaver"]
-        player_csgo_elo = player["games"]["csgo"]["faceit_elo"]
-        player_csgo_level = player["games"]["csgo"]["skill_level"]
+        player_csgo_elo = player["games"]["cs2"]["faceit_elo"]
+        player_csgo_level = player["games"]["cs2"]["skill_level"]
         player_lifetime_averagekd = player_csgo_stats["lifetime"]["Average K/D Ratio"]
         player_lifetime_winrate = player_csgo_stats["lifetime"]["Win Rate %"]
         player_lifetime_averagehs = player_csgo_stats["lifetime"]["Average Headshots %"]
@@ -135,14 +135,14 @@ class Faceit(commands.Cog):
         
             puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up elo of {faceit_name}")
 
-            player = faceit_data.player_details(faceit_name, "csgo")
+            player = faceit_data.player_details(faceit_name, "cs2")
             if player is None or "nickname" not in player:
                 puts(f"[Info] {ctx.author}: Name ({faceit_name} not exact, searching...")
                 
                 emb.set_field_at(0, name="Looking up players", value=f"{emb.fields[0].value}\nName not exact, searching...")
                 await message.edit(embed=emb)
 
-                player_search = faceit_data.search_players(faceit_name, "csgo", None, 0, 1)
+                player_search = faceit_data.search_players(faceit_name, "cs2", None, 0, 1)
                 items = player_search['items']
                 if len(items) == 0:
                     emb.set_field_at(0, name="Looking up players", value=f"{emb.fields[0].value}\nCouldn't find a player with the name \"{faceit_name}\"")
@@ -159,14 +159,14 @@ class Faceit(commands.Cog):
                 emb.set_field_at(0, name="Looking up players", value=f"{emb.fields[0].value}\nCouldn't find a player with the name \"{faceit_name}\"")
                 return await message.edit(embed=emb)
 
-            if "csgo" not in player["games"]:
-                emb.set_field_at(0, name="Looking up players", value=f"{emb.fields[0].value}\n{faceit_name} has not played csgo")
+            if "cs2" not in player["games"]:
+                emb.set_field_at(0, name="Looking up players", value=f"{emb.fields[0].value}\n{faceit_name} has not played cs2")
                 return await message.edit(embed=emb)
 
-            player_csgo_stats = faceit_data.player_stats(player_id, "csgo")
+            player_csgo_stats = faceit_data.player_stats(player_id, "cs2")
 
             player_name = player["nickname"]
-            player_csgo_elo = player["games"]["csgo"]["faceit_elo"]
+            player_csgo_elo = player["games"]["cs2"]["faceit_elo"]
             
             emb.set_field_at(0, name="Looking up players", value=f"{emb.fields[0].value}\n{player_name}: **{player_csgo_elo}**")
             await message.edit(embed=emb)
@@ -219,12 +219,12 @@ class Faceit(commands.Cog):
         puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up {amount_of_games} match averages for {faceit_name}")
         message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
 
-        player_d = faceit_data.player_details(faceit_name, "csgo")
+        player_d = faceit_data.player_details(faceit_name, "cs2")
         if player_d is None or "nickname" not in player_d:
             puts(f"[Info] {ctx.author}: Name ({faceit_name} not exact, searching...")
             await message.edit(content=f"{message.content}\n> Name not exact, searching...")
 
-            player_search = faceit_data.search_players(faceit_name, "csgo", None, 0, 1)
+            player_search = faceit_data.search_players(faceit_name, "cs2", None, 0, 1)
             items = player_search['items']
             if len(items) == 0:
                 return await message.edit(
@@ -240,16 +240,19 @@ class Faceit(commands.Cog):
         if player_d is None:
             return await message.edit(content=f"{message.content}\n> Couldn't find a player with the name \"{nickname}\"")
 
-        if "csgo" not in player_d["games"]:
-            return await message.edit(content=f"{message.content}\n> {nickname} has not played csgo")
+        if "cs2" not in player_d["games"]:
+            return await message.edit(content=f"{message.content}\n> {nickname} has not played cs2")
 
         player_name = player_d["nickname"]
         player_faceit_url = player_d["faceit_url"].replace("{lang}", "en")
         player_avatar = player_d["avatar"]
-        player_csgo_level = player_d["games"]["csgo"]["skill_level"]
+        player_csgo_level = player_d["games"]["cs2"]["skill_level"]
         level_emoji = get_emoji_level(player_csgo_level)
 
         player_last_x_average_stats = get_average_stats_of_last_x_matches(faceit_data, player_id, amount_of_games, ignore_1v1s)
+        
+        if player_last_x_average_stats.amountOfGames == -1:
+            return await message.edit(content=f"{message.content}\n> No matches found for {nickname}")
 
         emb2 = discord.Embed(color=self.color, url=player_faceit_url, title=f"{level_emoji} {player_name}")
         emb2.set_footer(text=f"Average stats from {player_last_x_average_stats.amountOfGames} matches", icon_url=player_avatar)
@@ -260,8 +263,8 @@ class Faceit(commands.Cog):
         emb2.add_field(name="Average K/R", value=f"{player_last_x_average_stats.averageKR}", inline=False)
         emb2.add_field(name="Average HS", value=f"{player_last_x_average_stats.averageHS}%", inline=False)
         emb2.add_field(name="Win rate", value=f"{player_last_x_average_stats.winRate}%", inline=False)
-        emb2.add_field(name="Highest ELO", value=f"{player_last_x_average_stats.highestELO}", inline=True)
-        emb2.add_field(name="Lowest ELO", value=f"{player_last_x_average_stats.lowestELO}", inline=True)
+        #emb2.add_field(name="Highest ELO", value=f"{player_last_x_average_stats.highestELO}", inline=True)
+        #emb2.add_field(name="Lowest ELO", value=f"{player_last_x_average_stats.lowestELO}", inline=True)
         await message.edit(content="", embed=emb2)
 
         if player_last_x_average_stats.passed != 0:
