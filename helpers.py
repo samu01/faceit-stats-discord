@@ -95,7 +95,7 @@ def get_average_stats_of_last_x_matches(faceit_data: FaceitData, player_id: str,
         return AverageStats(-1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1)
         
     matches = 0
-    #passed = 0
+    passed = 0
 
     total_kills = 0
     total_deaths = 0
@@ -110,7 +110,7 @@ def get_average_stats_of_last_x_matches(faceit_data: FaceitData, player_id: str,
         player_match_stats = faceit_data.match_stats(player_match["match_id"])
         for match_round in player_match_stats["rounds"]:
             if ignore_1v1s and "5v5" not in match_round["game_mode"]:
-                #passed += 1
+                passed += 1
                 continue
         
             player_stats = None
