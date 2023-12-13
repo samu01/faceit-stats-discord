@@ -1,7 +1,7 @@
 FROM python:3.9
 WORKDIR /workspace
 COPY . .
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --progress-bar off
 
 ENV DISCORD_TOKEN a
 ENV FACEIT_TOKEN b
