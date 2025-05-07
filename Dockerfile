@@ -6,5 +6,6 @@ RUN pip install -r requirements.txt
 
 ENV DISCORD_TOKEN a
 ENV FACEIT_TOKEN b
+ENV STEAM_API_KEY c
 
 CMD ["python", "./main.py"]
