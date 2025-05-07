@@ -12,7 +12,7 @@ import discord
 from faceit_api.faceit_data import FaceitData
 
 from discord.ext import commands
-from helpers import puts, elo_to_next_level, get_average_stats_of_last_x_matches, get_emoji_level
+from helpers import puts, elo_to_next_level, get_average_stats_of_last_x_matches, get_emoji_level, fetch_steam_id_by_vanity_url
 
 FC_TOKEN = os.environ.get('FACEIT_TOKEN')
 
@@ -27,22 +27,45 @@ class Faceit(commands.Cog):
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def faceit(self, ctx: commands.Context, nickname: str):
         faceit_name = nickname
-        puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up stats for {faceit_name}")
-        message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
 
-        player = faceit_data.player_details(faceit_name, "cs2")
-        if player is None or "nickname" not in player:
-            puts(f"[Info] {ctx.author}: Name ({faceit_name} not exact, searching...")
-            await message.edit(content=f"{message.content}\n> Name not exact, searching...")
+        steamid64 = None
+        if faceit_name.startswith("765"):
+            steamid64 = faceit_name
 
-            player_search = faceit_data.search_players(faceit_name, "cs2", None, 0, 1)
-            items = player_search['items']
-            if len(items) == 0:
-                return await message.edit(content=f"{message.content}\n> Couldn't find a player with the name \"{nickname}\"")
-
-            player_id = player_search['items'][0]["player_id"]
+        steam_id64_match = re.search(r"steamcommunity.com\/profiles\/([A-Za-z_0-9]+)", faceit_name)
+        if steam_id64_match:
+            steamid64 = steam_id64_match.group(1)
         else:
-            player_id = player["player_id"]
+            steam_id64_match = re.search(r"steamcommunity.com\/id\/([A-Za-z_0-9]+)", faceit_name)
+            if steam_id64_match:
+                steamid64 = fetch_steam_id_by_vanity_url(steam_id64_match.group(1))
+
+        if steamid64 is not None:
+            puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up stats for {steamid64}")
+            message = await ctx.send(f"> Looking up stats for **{steamid64}**")
+
+            player = faceit_data.player_details(game="cs2", game_player_id=steamid64)
+            if player is None:
+                return await message.edit(content=f"{message.content}\n> Couldn't find a player with steamid \"{steamid64}\"")
+            else:
+                player_id = player["player_id"]
+        else:    
+            puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up stats for {faceit_name}")
+            message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
+
+            player = faceit_data.player_details(faceit_name, "cs2")
+            if player is None or "nickname" not in player:
+                puts(f"[Info] {ctx.author}: Name ({faceit_name} not exact, searching...")
+                await message.edit(content=f"{message.content}\n> Name not exact, searching...")
+
+                player_search = faceit_data.search_players(faceit_name, "cs2", None, 0, 1)
+                items = player_search['items']
+                if len(items) == 0:
+                    return await message.edit(content=f"{message.content}\n> Couldn't find a player with the name \"{nickname}\"")
+
+                player_id = player_search['items'][0]["player_id"]
+            else:
+                player_id = player["player_id"]
 
         if player is None:
             player = faceit_data.player_id_details(player_id)
@@ -219,20 +242,40 @@ class Faceit(commands.Cog):
         puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up {amount_of_games} match averages for {faceit_name}")
         message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
 
-        player_d = faceit_data.player_details(faceit_name, "cs2")
-        if player_d is None or "nickname" not in player_d:
-            puts(f"[Info] {ctx.author}: Name ({faceit_name} not exact, searching...")
-            await message.edit(content=f"{message.content}\n> Name not exact, searching...")
-
-            player_search = faceit_data.search_players(faceit_name, "cs2", None, 0, 1)
-            items = player_search['items']
-            if len(items) == 0:
-                return await message.edit(
-                    content=f"{message.content}\n> Couldn't find a player with the name \"{nickname}\"")
-
-            player_id = player_search['items'][0]["player_id"]
+        steam_id64_match = re.search(r"steamcommunity.com\/profiles\/([A-Za-z_0-9]+)", faceit_name)
+        if steam_id64_match:
+            steamid64 = steam_id64_match.group(1)
         else:
-            player_id = player_d["player_id"]
+            steam_id64_match = re.search(r"steamcommunity.com\/id\/([A-Za-z_0-9]+)", faceit_name)
+            if steam_id64_match:
+                steamid64 = await fetch_steam_id_by_vanity_url(steam_id64_match.group(1))
+
+        if steamid64 is not None:
+            puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up stats for {steamid64}")
+            message = await ctx.send(f"> Looking up stats for **{steamid64}**")
+
+            player_d = faceit_data.player_details(game="cs2", game_player_id=steamid64)
+            if player_d is None:
+                return await message.edit(content=f"{message.content}\n> Couldn't find a player with steamid \"{steamid64}\"")
+            else:
+                player_id = player_d["player_id"]
+        else:
+            puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up stats for {faceit_name}")
+            message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
+
+            player_d = faceit_data.player_details(faceit_name, "cs2")
+            if player_d is None or "nickname" not in player_d:
+                puts(f"[Info] {ctx.author}: Name ({faceit_name} not exact, searching...")
+                await message.edit(content=f"{message.content}\n> Name not exact, searching...")
+
+                player_search = faceit_data.search_players(faceit_name, "cs2", None, 0, 1)
+                items = player_search['items']
+                if len(items) == 0:
+                    return await message.edit(content=f"{message.content}\n> Couldn't find a player with the name \"{nickname}\"")
+
+                player_id = player_search['items'][0]["player_id"]
+            else:
+                player_id = player_d["player_id"]
 
         if player_d is None:
             player_d = faceit_data.player_id_details(player_id)

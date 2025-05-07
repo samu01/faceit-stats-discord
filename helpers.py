@@ -1,6 +1,7 @@
 import time
 import requests
 import json
+import os
 from faceit_api.faceit_data import FaceitData
 from average_stats import AverageStats
 from datetime import datetime
@@ -86,6 +87,26 @@ def elo_to_next_level(current_elo: int, current_level: int):
 
     max_elo = get_level_max_elo(current_level)
     return max_elo - current_elo + 1
+
+STEAM_API_KEY = os.environ.get('STEAM_API_KEY')
+
+def fetch_steam_id_by_vanity_url(vanity_url):
+    try:
+        url = f"https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/"
+        params = {
+            'key': STEAM_API_KEY,
+            'vanityurl': vanity_url
+        }
+
+        res = requests.get(url, params=params)
+        if res.status_code == 200:
+            data = json.loads(res.content.decode('utf-8'))
+            if data["response"]["success"] == 1:
+                return data["response"]["steamid"]
+    except Exception as e:
+        print(f"Error fetching steamid by vanity url {vanity_url}: {e}")
+        
+    return None
 
 
 def get_average_stats_of_last_x_matches(faceit_data: FaceitData, player_id: str, amount: int, ignore_1v1s: bool) -> AverageStats:
