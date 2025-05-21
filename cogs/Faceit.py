@@ -240,7 +240,6 @@ class Faceit(commands.Cog):
         faceit_name = nickname
 
         puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up {amount_of_games} match averages for {faceit_name}")
-        message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
 
         steamid64 = None
 
