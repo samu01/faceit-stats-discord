@@ -242,6 +242,8 @@ class Faceit(commands.Cog):
         puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up {amount_of_games} match averages for {faceit_name}")
         message = await ctx.send(f"> Looking up stats for **{faceit_name}**")
 
+        steamid64 = None
+
         steam_id64_match = re.search(r"steamcommunity.com\/profiles\/([A-Za-z_0-9]+)", faceit_name)
         if steam_id64_match:
             steamid64 = steam_id64_match.group(1)
