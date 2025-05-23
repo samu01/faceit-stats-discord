@@ -249,7 +249,7 @@ class Faceit(commands.Cog):
         else:
             steam_id64_match = re.search(r"steamcommunity.com\/id\/([A-Za-z_0-9]+)", faceit_name)
             if steam_id64_match:
-                steamid64 = await fetch_steam_id_by_vanity_url(steam_id64_match.group(1))
+                steamid64 = fetch_steam_id_by_vanity_url(steam_id64_match.group(1))
 
         if steamid64 is not None:
             puts(f"[Info] [{ctx.guild}: {ctx.channel}] {ctx.author} looking up stats for {steamid64}")
